@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Ledger <a class="btn" href="{{ url_for('export_csv') }}">Export CSV</a></h1>
+
+{% if rows %}
+<table>
+  <tr><th>#</th><th>Vendor</th><th>Invoice no.</th><th>Date</th>
+      <th>Subtotal</th><th>Tax</th><th>Total</th><th>Currency</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td><a href="{{ url_for('invoice_view', invoice_id=r.id) }}">{{ r.id }}</a></td>
+    <td>{{ r.vendor }}</td><td>{{ r.invoice_number }}</td><td>{{ r.invoice_date }}</td>
+    <td>{{ r.subtotal }}</td><td>{{ r.tax }}</td><td>{{ r.total }}</td><td>{{ r.currency }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<div class="card">
+  <h2>Multi-currency total</h2>
+  <p><b>₹ {{ '{:,.2f}'.format(total_inr) }}</b> — all approved invoices converted to INR.</p>
+  <p class="muted small">Rates are a static table ({{ rates|join(', ') }}), not a live feed —
+     a documented limitation; see README.</p>
+  {% if skipped %}<p class="muted small">Skipped (unparseable total/currency): {{ skipped|join(', ') }}</p>{% endif %}
+</div>
+{% else %}
+<p class="muted">No approved invoices yet — upload one from the dashboard.</p>
+{% endif %}
+{% endblock %}
