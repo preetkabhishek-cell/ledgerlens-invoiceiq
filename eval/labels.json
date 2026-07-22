@@ -1,0 +1,20 @@
+{
+  "invoice_1.png": {
+    "vendor": "Sharma Traders Pvt Ltd",
+    "invoice_number": "ST-2026-0142",
+    "invoice_date": "2026-07-01",
+    "subtotal": "12500",
+    "tax": "2250",
+    "total": "14750",
+    "currency": "INR"
+  },
+  "invoice_2.png": {
+    "vendor": "Blue Harbor Supplies LLC",
+    "invoice_number": "BH-88431",
+    "invoice_date": "2026-06-24",
+    "subtotal": "231",
+    "tax": "18.48",
+    "total": "249.48",
+    "currency": "USD"
+  }
+}
