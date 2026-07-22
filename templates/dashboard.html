@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="stats">
+  <div class="stat"><span class="num">{{ stats.total }}</span>Invoices</div>
+  <div class="stat"><span class="num">{{ stats.approved }}</span>In ledger</div>
+  <div class="stat warn"><span class="num">{{ stats.pending }}</span>Needs review</div>
+  <div class="stat"><span class="num">{{ stats.duplicates }}</span>Duplicates caught</div>
+</div>
+
+<div class="card">
+  <h2>Upload an invoice</h2>
+  <p class="muted">PNG / JPG / WEBP. The AI reads vendor, date, line items and totals,
+     and scores its own confidence per field — anything under 0.8 comes back to you for review.</p>
+  <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+    <input type="file" name="invoice" accept=".png,.jpg,.jpeg,.webp" required>
+    <button type="submit">Upload &amp; extract</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Review queue</h2>
+  {% if queue %}
+  <table>
+    <tr><th>#</th><th>File</th><th>Uploaded</th><th>Low-confidence fields</th><th></th></tr>
+    {% for inv in queue %}
+    <tr>
+      <td>{{ inv.id }}</td>
+      <td>{{ inv.filename }}</td>
+      <td>{{ inv.uploaded_at }}</td>
+      <td><span class="badge">{{ inv.pending }}</span></td>
+      <td><a class="btn" href="{{ url_for('invoice_view', invoice_id=inv.id) }}">Review</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Nothing waiting — upload an invoice above.</p>
+  {% endif %}
+</div>
+{% endblock %}
