@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Invoice #{{ inv.id }}
+  <span class="badge status-{{ inv.status }}">{{ inv.status.replace('_',' ') }}</span>
+</h1>
+
+{% if inv.status == 'duplicate' %}
+<div class="flash">This upload matched invoice #{{ inv.duplicate_of }} by perceptual hash —
+it was parked as a duplicate and is not counted in the ledger.</div>
+{% endif %}
+
+<div class="split">
+  <div class="card">
+    <h2>Original image</h2>
+    <img class="invoice-img" src="{{ url_for('uploaded_file', filename=inv.filename) }}" alt="invoice scan">
+  </div>
+
+  <div class="card">
+    <h2>Extracted fields</h2>
+    <form method="post">
+      <table>
+        <tr><th>Field</th><th>Value</th><th>Confidence</th></tr>
+        {% for f in fields %}
+        <tr class="{{ 'low' if f.needs_review and not f.reviewed }}">
+          <td>{{ f.name.replace('_',' ') }}</td>
+          <td>
+            {% if f.needs_review and not f.reviewed %}
+              <input name="field_{{ f.id }}" value="{{ f.value }}">
+            {% else %}
+              {{ f.value }}
+            {% endif %}
+          </td>
+          <td>
+            <span class="conf {{ 'bad' if f.confidence < threshold else 'good' }}">
+              {{ '%.2f'|format(f.confidence) }}
+            </span>
+            {% if f.reviewed %}<span class="muted small">(human-verified)</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% if inv.status == 'needs_review' %}
+      <p class="muted small">Highlighted fields scored under {{ threshold }} — correct or confirm
+      them, then approve.</p>
+      <button type="submit">Save corrections &amp; approve</button>
+      {% endif %}
+    </form>
+
+    {% if items %}
+    <h2>Line items</h2>
+    <table>
+      <tr><th>Description</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr>
+      {% for li in items %}
+      <tr><td>{{ li.description }}</td><td>{{ li.quantity }}</td>
+          <td>{{ li.unit_price }}</td><td>{{ li.amount }}</td></tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
